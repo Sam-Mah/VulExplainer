@@ -4,7 +4,7 @@ import numpy as np
 from ExplanationEvaluation.datasets.dataset_loaders import load_dataset
 from ExplanationEvaluation.datasets.utils import adj_to_edge_index
 
-graphs, features, labels, blk_hash_lst, _, _, _= load_dataset('vul')
+graphs, features, labels, blk_hash_lst, _, _, _ = load_dataset('vul')
 # Resize th graph
 min = np.shape(graphs[0])[1]
 for x in graphs:
@@ -38,13 +38,14 @@ explainer = PGExplainer(model, graphs, features, task)
 indices = range(4000, 6000, 10)
 explainer.prepare(indices)
 # A graph to explain
-idx = indices[0]  # select a node to explain, this needs to be part of the list of indices
+idx = indices[5]  # select a node to explain, this needs to be part of the list of indices
+# file_name = file_list[idx]
 graph, expl = explainer.explain(idx)
 
 from ExplanationEvaluation.utils.plotting import plot
 
 # Need to feed the edge indices
-plot(graph, expl, labels, idx, -1, 100, 'vul', show=True)
+plot(graph, expl, labels, blk_hash_lst[idx], idx, -1, 100, 'vul', show=True)
 
 from ExplanationEvaluation.datasets.ground_truth_loaders import load_dataset_ground_truth
 

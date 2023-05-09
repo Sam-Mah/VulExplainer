@@ -3,15 +3,14 @@ import torch
 import numpy as np
 import matplotlib.pyplot as plt
 from pathlib import Path
-
+from ExplanationEvaluation.utils.graph2CSV import example2CSV
+import pandas as pd
 """ 
 The function in this file is largely copied from the orginal PGExplainer codebase. The decision was made to largely copy this file to ensure
 that the graph visualization between the original and replicate results would be as similar as possible. Additional comments were added
 to clarify the code. 
 """
-
-
-def plot(graph, edge_weigths, labels, idx, thres_min, thres_snip, dataset, args=None, gt=None, show=False):
+def plot(graph, edge_weigths, labels, labeldict, idx, thres_min, thres_snip, dataset, args=None, gt=None, show=False):
     """
     Function that can plot an explanation (sub)graph and store the image.
 
@@ -27,23 +26,22 @@ def plot(graph, edge_weigths, labels, idx, thres_min, thres_snip, dataset, args=
     """
     # Set thresholds
     sorted_edge_weigths, _ = torch.sort(edge_weigths)
-
     thres_index = max(int(edge_weigths.shape[0] - thres_snip), 0)
-
-    # thres = sorted_edge_weigths[thres_index]
-    thres = 0.007
-    # if thres_min == -1:
-    #     filter_thres_index = 0
-    # else:
-    #     filter_thres_index = min(thres_index,
-    #                             max(int(edge_weigths.shape[0]-edge_weigths.shape[0]/2),
-    #                                 edge_weigths.shape[0]-thres_min))
-    # filter_thres = sorted_edge_weigths[filter_thres_index]
-    filter_thres = 0.004
+    thres = sorted_edge_weigths[thres_index]
+    # thres = 0.006
+    if thres_min == -1:
+        filter_thres_index = 0
+    else:
+        filter_thres_index = min(thres_index,
+                                max(int(edge_weigths.shape[0]-edge_weigths.shape[0]/2),
+                                    edge_weigths.shape[0]-thres_min))
+    filter_thres = sorted_edge_weigths[filter_thres_index]
+    # filter_thres = 0.002
     # Init edges
     filter_nodes = set()
     filter_edges = []  # Are the filtered edges
     pos_edges = []  # Are the important edges
+
     # Select all edges and nodes to plot
     for i in range(edge_weigths.shape[0]):
         # Select important edges
@@ -55,6 +53,11 @@ def plot(graph, edge_weigths, labels, idx, thres_min, thres_snip, dataset, args=
             filter_nodes.add(graph[0][i].item())
             filter_nodes.add(graph[1][i].item())
     num_nodes = len(pos_edges)
+    # Filter the nodes based on filter_nodes
+    for k in filter_nodes.copy():
+        if k not in labeldict.keys():
+            filter_nodes.remove(k)
+    sub_labeldict = {k: labeldict[k] for k in filter_nodes}
 
     # Initialize graph object
     G = nx.Graph()
@@ -136,7 +139,9 @@ def plot(graph, edge_weigths, labels, idx, thres_min, thres_snip, dataset, args=
                                pos,
                                nodelist=filter_nodes,
                                node_color='red',
-                               node_size=500)
+                               node_size=500,
+                               label=sub_labeldict,
+                               )
 
     # Draw an edge
     nx.draw_networkx_edges(G,
@@ -144,13 +149,15 @@ def plot(graph, edge_weigths, labels, idx, thres_min, thres_snip, dataset, args=
                            width=7,
                            alpha=0.5,
                            edge_color='grey')
-
     # Draw all pos edges
     nx.draw_networkx_edges(G,
                            pos,
                            edgelist=pos_edges,
                            width=7,
                            alpha=0.5)
+
+    nx.draw_networkx_labels(G, pos, labels=sub_labeldict)
+
     plt.axis('off')
     if show:
         plt.show()
@@ -163,3 +170,4 @@ def plot(graph, edge_weigths, labels, idx, thres_min, thres_snip, dataset, args=
         # Save figure
         plt.savefig(f'{save_path}{idx}.png')
         plt.clf()
+    example2CSV(idx,filter_edges, sub_labeldict)

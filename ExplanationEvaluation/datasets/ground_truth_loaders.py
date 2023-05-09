@@ -16,7 +16,7 @@ def load_vul_ground_truth(shuffle=True):
     dir_path = os.path.dirname(os.path.realpath(__file__))
     path = dir_path + '/pkls/' + "vul" + '.pkl'
     with open(path, 'rb') as fin:
-        adjs, features, labels = pkl.load(fin)
+        adjs, features, labels, blk_hash_lst = pkl.load(fin)
 
     n_graphs = adjs.shape[0]
     indices = np.arange(0, n_graphs)

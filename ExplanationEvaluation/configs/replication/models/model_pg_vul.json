@@ -1,7 +1,7 @@
 {
     "model": {
         "dataset": "vul",
-        "paper": "GNN",
+        "paper": "PG",
         "lr" : 0.001,
         "epochs" : 600,
         "clip_max" : 2.0,

@@ -10,7 +10,8 @@ import pickle as pkl
 
 out_dir = "Output_Graph_Adj"
 path_f = "Output_embedding_withEdge"
-curr_dir = os.path.join(os.getcwd(), path_f)
+# curr_dir = os.path.join(os.getcwd(), path_f)
+curr_dir = os.path.join("I:\XAI_Project\Datasets\Data_VulEx", path_f)
 
 # Get the average number of blocks in files
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -35,7 +36,7 @@ graph = np.zeros((num_samples, d1, d1))
 features = np.zeros((num_samples, d1, len_fet_vec))
 labels = np.zeros((num_samples, num_class))
 blk_hash_lst = []
-file_lst = []
+# file_lst = []
 i = 0
 substring = "good"
 good_lbl = np.array([0, 1])
@@ -87,10 +88,10 @@ for filename in os.listdir(curr_dir):
                 labels[i] = bad_lbl
 
         blk_hash_lst.append(blk_dict)
-        file_lst.append(filename)
+        # file_lst.append(filename)
         i += 1
 print("Mission Accomplished")
-out_list = [graph, features, labels, blk_hash_lst, file_lst]
+out_list = [graph, features, labels, blk_hash_lst]
 dir_path = os.path.dirname(os.path.realpath(__file__))
 path = dir_path + "Vulnerability" + '.pkl'
 open_file = open(path, "wb")

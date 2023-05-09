@@ -5,7 +5,7 @@ from torch_geometric.data import Data, DataLoader
 
 from ExplanationEvaluation.datasets.dataset_loaders import load_dataset
 from ExplanationEvaluation.models.model_selector import model_selector
-
+from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 
 def create_data_list(graphs, features, labels, mask):
     """
@@ -35,9 +35,17 @@ def evaluate(out, labels):
     :returns: int accuracy
     """
     preds = out.argmax(dim=1)
-    correct = preds == labels
-    acc = int(correct.sum()) / int(correct.size(0))
-    return acc
+    # correct = preds == labels
+    # acc = int(correct.sum()) / int(correct.size(0))
+
+    # lbls = [torch.argmax(t) for t in true_labels]
+    # preds = [torch.argmax(t) for t in predictions]
+    #
+    ACC = accuracy_score(labels, preds)
+    PR = precision_score(labels, preds, average='weighted',  labels=np.unique(preds))
+    F1 = f1_score(labels, preds, average='weighted', labels=np.unique(preds))
+    RC = recall_score(labels, preds, average='weighted', labels=np.unique(preds))
+    return ACC, PR, F1, RC
 
 
 def store_checkpoint(paper, dataset, model, train_acc, val_acc, test_acc, epoch=-1):
@@ -92,7 +100,7 @@ def train_node(_dataset, _paper, args):
     """
     Train a explainer to explain node classifications
     :param _dataset: the dataset we wish to use for training
-    :param _paper: the paper we whish to follow, chose from "GNN" or "PG"
+    :param _paper: the paper we wish to follow, chose from "GNN" or "PG"
     :param args: a dict containing the relevant model arguements
     """
     graph, features, labels, train_mask, val_mask, test_mask = load_dataset(_dataset)
@@ -158,7 +166,7 @@ def train_graph(_dataset, _paper, args):
     :param _paper: the paper we whish to follow, chose from "GNN" or "PG"
     :param args: a dict containing the relevant model arguements
     """
-    graphs, features, labels, train_mask, val_mask, test_mask = load_dataset(_dataset)
+    graphs, features, labels, blk_hash_lst, train_mask, val_mask, test_mask = load_dataset(_dataset)
     train_set = create_data_list(graphs, features, labels, train_mask)
     val_set = create_data_list(graphs, features, labels, val_mask)
     test_set = create_data_list(graphs, features, labels, test_mask)
@@ -203,11 +211,11 @@ def train_graph(_dataset, _paper, args):
 
             eval_data = next(iter(test_loader)) # Loads all test samples
             out = model(eval_data.x, eval_data.edge_index, eval_data.batch)
-            test_acc = evaluate(out, eval_data.y)
+            test_acc, test_pr, test_f1, test_rc = evaluate(out, eval_data.y)
 
             eval_data = next(iter(val_loader)) # Loads all eval samples
             out = model(eval_data.x, eval_data.edge_index, eval_data.batch)
-            val_acc = evaluate(out, eval_data.y)
+            val_acc,_, _,_ = evaluate(out, eval_data.y)
 
         print(f"Epoch: {epoch}, train_acc: {train_acc:.4f}, val_acc: {val_acc:.4f}, train_loss: {loss:.4f}")
 
@@ -233,12 +241,13 @@ def train_graph(_dataset, _paper, args):
 
         eval_data = next(iter(test_loader))
         out = model(eval_data.x, eval_data.edge_index, eval_data.batch)
-        test_acc = evaluate(out, eval_data.y)
+        # test_acc = evaluate(out, eval_data.y)
+        test_acc, test_pr, test_f1, test_rc = evaluate(out, eval_data.y)
 
         eval_data = next(iter(val_loader))
         out = model(eval_data.x, eval_data.edge_index, eval_data.batch)
-        val_acc = evaluate(out, eval_data.y)
+        val_acc,_, _,_ = evaluate(out, eval_data.y)
 
-    print(f"final train_acc:{train_acc}, val_acc: {val_acc}, test_acc: {test_acc}")
+    print(f"final train_acc:{train_acc}, val_acc: {val_acc}, test_acc: {test_acc}, test_pr: {test_pr}, test_f1: {test_f1}, test_rc: {test_rc}")
 
     store_checkpoint(_paper, _dataset, model, train_acc, val_acc, test_acc)

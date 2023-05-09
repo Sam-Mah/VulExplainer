@@ -15,6 +15,7 @@ import os
 import json
 import itertools
 import numpy as np
+from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 from sklearn import preprocessing
 
 
@@ -80,8 +81,8 @@ def classify(train_data, test_data, vocab) -> None:
     words = tfidf.get_feature_names()
     print(len(words))
     # model = LogisticRegressionCV()
-    # model = RandomForestClassifier(max_depth=300)  # , random_state=None)
-    model = GradientBoostingClassifier(random_state=None)
+    model = RandomForestClassifier(max_depth=300)  # , random_state=None)
+    # model = GradientBoostingClassifier(random_state=None)
     # model = MLPClassifier(hidden_layer_sizes= (100,10),solver='adam', random_state=None)
     # clf = DecisionTreeClassifier(max_depth=100, random_state=None)
     # model = svm.SVC(gamma='scale', decision_function_shape='ovo')
@@ -93,8 +94,17 @@ def classify(train_data, test_data, vocab) -> None:
     train_score = model.score(x_transformed, y_train)
     test_score = model.score(x_test_transformed, y_test)
 
+
+    # return accuracy_score(y, model.predict(X), sample_weight=sample_weight)
+    ACC = accuracy_score(y_test, model.predict(x_test_transformed))
+    PR = precision_score(y_test, model.predict(x_test_transformed), average='weighted')
+    F1 = f1_score(y_test, model.predict(x_test_transformed), average='weighted')
+    RC = recall_score(y_test, model.predict(x_test_transformed), average='weighted')
+
     result_base = "Train Accuracy: {train_acc:<.1%}  Test Accuracy: {test_acc:<.1%}"
     result = result_base.format(train_acc=train_score, test_acc=test_score)
+    print(
+        f"final train_acc:{train_score}, val_acc: {train_score}, test_acc: {ACC}, test_pr: {PR}, test_f1: {F1}, test_rc: {RC}")
 
     print(result)
 
@@ -140,12 +150,14 @@ def embedding(vocab, data_path, data):
 def main(data_path: str):
     data, vocab = preprocess_data(data_path)
     # &&&&&&&&&&&&&&&&&&&&&&&Embeddings&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-    embedding(vocab, data_path, data)
+    # embedding(vocab, data_path, data)
     # &&&&&&&&&&&&&&&&&&&&&&&Classification&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-    # train_data, test_data = prepare_date(data)
-    # classify(train_data, test_data, vocab)
+    train_data, test_data = prepare_date(data)
+    classify(train_data, test_data, vocab)
 
 if __name__ == '__main__':
-    data_path = "Output"
+    # data_path = "Output"
+    data_path = "I:\XAI_Project\Datasets\Data_VulEx\Output"
+
     main(data_path)
     print("Mission Accomplished")
