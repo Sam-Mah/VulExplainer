@@ -87,3 +87,20 @@ def evaluation_auc_node(explanations, explanation_labels):
 
     score = roc_auc_score(ground_truth, predictions)
     return score
+
+def evaluation_fidelity_graph(original_pred, masked_pred):
+    """
+            returns the fidelity based on how much two predictions match
+            (original_pred-masked_pred)
+           :param masked_pred: Prediction based on the current explanation
+           :param original_pred: Predicion based on the original graph
+           :return: fidelity
+    """
+
+    cnt = 0
+    for i in range(len(original_pred)):
+        if (int(original_pred[i]) == int(masked_pred[i])):
+            cnt += 1
+    fidelity = cnt / len(original_pred)
+
+    return fidelity

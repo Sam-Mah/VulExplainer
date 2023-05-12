@@ -7,7 +7,7 @@ from tqdm import tqdm
 
 from ExplanationEvaluation.explainers.BaseExplainer import BaseExplainer
 from ExplanationEvaluation.utils.graph import index_edge
-
+from ExplanationEvaluation.evaluation.utils import evaluation_fidelity_graph
 class PGExplainer(BaseExplainer):
     """
     A class encaptulating the PGExplainer (https://arxiv.org/abs/2011.04573).
@@ -172,9 +172,50 @@ class PGExplainer(BaseExplainer):
                 # id_loss = self._loss(masked_pred, torch.argmax(original_pred).unsqueeze(0), mask, self.reg_coefs)
                 id_loss = self._loss(masked_pred, original_pred, mask, self.reg_coefs)
                 loss += id_loss
-
+            # Backpropage the loss and compute the gradients
             loss.backward()
+            # Update the weights
             optimizer.step()
+
+    def evaluate(self, indices = None):
+        t = 1.0
+        masked_pred_lst = []
+        original_pred_lst = []
+
+        for n in indices:
+            n = int(n)
+            if self.type == 'node':
+                # Similar to the original paper we only consider a subgraph for explaining
+                feats = self.features
+                graph = ptgeom.utils.k_hop_subgraph(n, 3, self.graphs)[1]
+            else:
+                feats = self.features[n].detach()
+                graph = self.graphs[n].detach()
+                embeds = self.model_to_explain.embedding(feats, graph).detach()
+
+            # Sample possible explanation
+            input_expl = self._create_explainer_input(graph, embeds, n).unsqueeze(0)
+            sampling_weights = self.explainer_model(input_expl)
+            mask = self._sample_graph(sampling_weights, t, bias=self.sample_bias).squeeze()
+
+            masked_pred = self.model_to_explain(feats, graph, edge_weights=mask)
+
+            original_pred = self.model_to_explain(feats, graph)
+
+            if self.type == 'node':  # we only care for the prediction of the node
+                masked_pred = masked_pred[n].unsqueeze(dim=0)
+                original_pred = original_pred[n]
+
+            masked_pred_lst.append(masked_pred)
+            original_pred_lst.append(original_pred)
+
+        # *********************************
+        # call fidelity from utils
+        lbls = [torch.argmax(t) for t in original_pred_lst]
+        preds = [torch.argmax(t) for t in masked_pred_lst]
+        fidelity = evaluation_fidelity_graph(lbls, preds)
+
+        print(fidelity)
 
     def explain(self, index):
         """
@@ -205,3 +246,6 @@ class PGExplainer(BaseExplainer):
             expl_graph_weights[t] = mask[i]
 
         return graph, expl_graph_weights
+
+
+

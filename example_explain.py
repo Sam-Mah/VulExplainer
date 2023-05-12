@@ -19,10 +19,10 @@ features = torch.tensor(features)
 labels = torch.tensor(labels)
 
 # Overwrite these models with your own if you want to
-from ExplanationEvaluation.models.GNN_paper import NodeGCN
-
+# from ExplanationEvaluation.models.GNN_paper import NodeGCN
+from ExplanationEvaluation.models.PG_paper import GraphGCN
 # model = NodeGCN(10, 2)
-model = NodeGCN(9, 2)
+model = GraphGCN(9, 2)
 # path = "./ExplanationEvaluation/models/pretrained/GNN/syn1/best_model"
 # checkpoint = torch.load(path)
 # model.load_state_dict(checkpoint['model_state_dict'])
@@ -35,12 +35,13 @@ from ExplanationEvaluation.explainers.PGExplainer import PGExplainer
 explainer = PGExplainer(model, graphs, features, task)
 
 # We use the same indices as used in the original paper
-indices = range(4000, 6000, 10)
+indices = range(4000, 6000, 1)
 explainer.prepare(indices)
 # A graph to explain
 idx = indices[5]  # select a node to explain, this needs to be part of the list of indices
 # file_name = file_list[idx]
 graph, expl = explainer.explain(idx)
+explainer.evaluate(indices)
 
 from ExplanationEvaluation.utils.plotting import plot
 
