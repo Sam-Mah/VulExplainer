@@ -7,6 +7,25 @@ import numpy as np
 import pandas as pd
 import json
 import pickle as pkl
+import pandas as pd
+
+# Extract the BERT Embeddings
+# $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+path_f = "Output_Graph_CSVs_with_BERT_embedding\Output_Graph_CSVs"
+curr_dir = os.path.join("I:\XAI_Project\Datasets\Data_VulEx", path_f)
+
+lst_bert_blk = []
+for dir in os.listdir(curr_dir):
+    for file_name in os.listdir(os.path.join(curr_dir, dir)):
+        if file_name.endswith("v2.csv"):
+            df = pd.read_csv(os.path.join(curr_dir, dir, file_name))
+            # join_lst = ', '.join(col_list)
+            # df_slice = df.loc[:, join_lst]
+            df_slice = df.iloc[:, 5:]
+            df_slice_blk = df.loc[:, "ID"]
+            lst_cat = [df_slice_blk, df_slice]  # List of your dataframes
+            df_result = pd.concat(lst_cat, axis=1)
+            lst_bert_blk.append(df_result)
 
 out_dir = "Output_Graph_Adj"
 path_f = "Output_embedding_withEdge"
@@ -37,7 +56,8 @@ features = np.zeros((num_samples, d1, len_fet_vec))
 labels = np.zeros((num_samples, num_class))
 blk_hash_lst = []
 # file_lst = []
-i = 0
+
+i = 0  # file counter
 substring = "good"
 good_lbl = np.array([0, 1])
 bad_lbl = np.array([1, 0])
@@ -52,12 +72,27 @@ for filename in os.listdir(curr_dir):
             # df_edges = pd.DataFrame(columns=['Source', 'Destination', 'Features'])
             data = json.load(f)
             blk_dict = {}
-            j = 0
+
+            j = 0  # block counter
             for block in data:
                 if (len(data[block]['src']) != 0 and j < d1):
                     # Node DataFrame
+
+                    # Node Features: (BERT + Operand Types + TFIDF Value)
+                    df_1 = lst_bert_blk[i]
+                    bert_embed = df_1[df_1['ID'] == block][1:]
+                    features[i, j] = np.hstack((data[block]['features'], data[block]['embedding'], bert_embed))
                     # Node Features: (Operand Types + TFIDF Value)
                     features[i, j] = np.hstack((data[block]['features'], data[block]['embedding']))
+
+                    # Node Features : (Operand Types)
+
+                    # Node Features : (BERT)
+
+                    # Node Features : (Operand Types + BERT)
+
+                    # Node Features : (BERT + TFIDF)
+
                     blk_dict[j] = block
                     # node_feature.append(data[block]['embedding'])
                     # list_row = {'ID': block, 'Features': node_feature, 'Src': data[block]['src']}
