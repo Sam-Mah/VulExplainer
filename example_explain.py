@@ -35,11 +35,11 @@ from ExplanationEvaluation.explainers.PGExplainer import PGExplainer
 explainer = PGExplainer(model, graphs, features, task)
 
 # We use the same indices as used in the original paper
-# indices = range(4000, 6000, 1)
-indices = range(2000, 3000, 1)
+indices = range(4000, 6000, 1)
+# indices = range(2000, 3000, 1)
 explainer.prepare(indices)
 # A graph to explain
-idx = indices[5]  # select a node to explain, this needs to be part of the list of indices
+idx = indices[0]  # select a node to explain, this needs to be part of the list of indices
 # file_name = file_list[idx]
 graph, expl = explainer.explain(idx)
 explainer.evaluate(indices)

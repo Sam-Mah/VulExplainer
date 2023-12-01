@@ -10,27 +10,27 @@ import pickle as pkl
 import pandas as pd
 
 # Extract the BERT Embeddings
-# $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-path_f = "Output_Graph_CSVs_with_BERT_embedding\Output_Graph_CSVs"
-curr_dir = os.path.join("I:\XAI_Project\Datasets\Data_VulEx", path_f)
+# # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+# path_f = "Output_Graph_CSVs_with_BERT_embedding\Output_Graph_CSVs"
+# curr_dir = os.path.join("I:\XAI_Project\Datasets\Data_VulEx", path_f)
 
-lst_bert_blk = []
-for dir in os.listdir(curr_dir):
-    for file_name in os.listdir(os.path.join(curr_dir, dir)):
-        if file_name.endswith("v2.csv"):
-            df = pd.read_csv(os.path.join(curr_dir, dir, file_name))
-            # join_lst = ', '.join(col_list)
-            # df_slice = df.loc[:, join_lst]
-            df_slice = df.iloc[:, 5:]
-            df_slice_blk = df.loc[:, "ID"]
-            lst_cat = [df_slice_blk, df_slice]  # List of your dataframes
-            df_result = pd.concat(lst_cat, axis=1)
-            lst_bert_blk.append(df_result)
+# lst_bert_blk = []
+# for dir in os.listdir(curr_dir):
+#     for file_name in os.listdir(os.path.join(curr_dir, dir)):
+#         if file_name.endswith("v2.csv"):
+#             df = pd.read_csv(os.path.join(curr_dir, dir, file_name))
+#             # join_lst = ', '.join(col_list)
+#             # df_slice = df.loc[:, join_lst]
+#             df_slice = df.iloc[:, 5:]
+#             df_slice_blk = df.loc[:, "ID"]
+#             lst_cat = [df_slice_blk, df_slice]  # List of your dataframes
+#             df_result = pd.concat(lst_cat, axis=1)
+#             lst_bert_blk.append(df_result)
 
-out_dir = "Output_Graph_Adj"
-path_f = "Output_embedding_withEdge"
+# out_dir = "I:\Output_Graph_Adj"
+path_f = "\Mohammad_Bert\Output_embedding_withEdgeBert"
 # curr_dir = os.path.join(os.getcwd(), path_f)
-curr_dir = os.path.join("I:\XAI_Project\Datasets\Data_VulEx", path_f)
+curr_dir = os.path.join("I:", path_f)
 
 # Get the average number of blocks in files
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -65,7 +65,7 @@ for filename in os.listdir(curr_dir):
     if filename.endswith('.json'):
         # file_name_slpt = re.split('..', filename)
         # out_path = os.path.join(out_dir, file_name_slpt[0]+"_"+file_name_slpt[1])
-        out_path = os.path.join(out_dir, filename)
+        # out_path = os.path.join(out_dir, filename)
         # os.makedirs(out_path)
         with open(os.path.join(curr_dir, filename), 'r') as f:
             # df_nodes = pd.DataFrame(columns=['ID', 'Features', 'Src'])
@@ -78,10 +78,10 @@ for filename in os.listdir(curr_dir):
                 if (len(data[block]['src']) != 0 and j < d1):
                     # Node DataFrame
 
-                    # Node Features: (BERT + Operand Types + TFIDF Value)
-                    df_1 = lst_bert_blk[i]
-                    bert_embed = df_1[df_1['ID'] == block][1:]
-                    features[i, j] = np.hstack((data[block]['features'], data[block]['embedding'], bert_embed))
+                    # # Node Features: (BERT + Operand Types + TFIDF Value)
+                    # df_1 = lst_bert_blk[i]
+                    # bert_embed = df_1[df_1['ID'] == block][1:]
+                    # features[i, j] = np.hstack((data[block]['features'], data[block]['embedding'], bert_embed))
                     # Node Features: (Operand Types + TFIDF Value)
                     features[i, j] = np.hstack((data[block]['features'], data[block]['embedding']))
 
@@ -128,7 +128,7 @@ for filename in os.listdir(curr_dir):
 print("Mission Accomplished")
 out_list = [graph, features, labels, blk_hash_lst]
 dir_path = os.path.dirname(os.path.realpath(__file__))
-path = dir_path + "Vulnerability" + '.pkl'
+path = dir_path + "Vulnerability_Bert" + '.pkl'
 open_file = open(path, "wb")
 pkl.dump(out_list, open_file)
 open_file.close()

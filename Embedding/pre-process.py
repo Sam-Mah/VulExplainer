@@ -101,7 +101,7 @@ def bag_of_words_opr_types(opr_list):
 def pre_process_CFG(path_f):
     # Opening JSON file
     curr_dir = os.path.join(os.getcwd(), path_f)
-    out_dir = "Output"
+    out_dir = "I:/Mohammad_Bert/Output_withEdgeBert"
 
     substring1 = "call"
     substring2 = "bnd"
