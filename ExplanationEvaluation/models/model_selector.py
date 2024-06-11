@@ -27,7 +27,7 @@ def string_to_model(paper, dataset):
         elif dataset == "mutag":
             return GNN_GraphGCN(14, 2)
         elif dataset == "vul":
-            return GNN_GraphGCN(9, 2)
+            return GNN_GraphGCN(265, 2)
         else:
             raise NotImplementedError
     elif paper == "PG":
@@ -44,7 +44,8 @@ def string_to_model(paper, dataset):
         elif dataset == "mutag":
             return PG_GraphGCN(14, 2)
         elif dataset == "vul":
-            return PG_GraphGCN(9, 2)
+            return PG_GraphGCN(265, 2)
+            # return PG_GraphGCN(9, 2)
         else:
             raise NotImplementedError
     else:

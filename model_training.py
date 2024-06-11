@@ -8,8 +8,8 @@ _dataset = 'vul'  # One of: bashapes, bacommunity, treecycles, treegrids, ba2mot
 
 # Parameters below should only be changed if you want to run any of the experiments in the supplementary
 _folder = 'replication'  # One of: replication, batchnorm
-_model = 'gnn' if _folder == 'replication' else 'ori'
-# _model = 'pg'
+# _model = 'gnn' if _folder == 'replication' else 'ori'
+_model = 'pg'
 # PGExplainer
 config_path = f"./ExplanationEvaluation/configs/{_folder}/models/model_{_model}_{_dataset}.json"
 

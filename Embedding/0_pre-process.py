@@ -90,18 +90,21 @@ def bag_of_words_opr_types(opr_list):
         if len(opr_list[i]) == 0:
             opr_list[i].append(0)
 
-    flat_opr_list = np.array(list(itertools.chain.from_iterable(opr_list)))
-    values, counts = np.unique(flat_opr_list, return_counts=True)
-    if (len(opr_list) != 0):
-        for i in range(len(bag_words)):
-            bag_words[values] = counts
+    try:
+        flat_opr_list = np.array(list(itertools.chain.from_iterable(opr_list)))
+        values, counts = np.unique(flat_opr_list, return_counts=True)
+        if (len(opr_list) != 0):
+            for i in range(len(bag_words)):
+                bag_words[values] = counts
+    except:
+        print("Out of bound index")
 
     return bag_words
 
 def pre_process_CFG(path_f):
     # Opening JSON file
     curr_dir = os.path.join(os.getcwd(), path_f)
-    out_dir = "I:/Mohammad_Bert/Output_withEdgeBert"
+    out_dir = r'I:\XAI_Project\Datasets\Data_VulEx\Output_NDSS'
 
     substring1 = "call"
     substring2 = "bnd"
@@ -197,6 +200,6 @@ def print_Json(path_f):
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    pre_process_CFG('Data')
+    pre_process_CFG(r'I:\XAI_Project\Datasets\Ashita\NDSS18\NDSS18Graph\Output_Preprocessed')
     # pre_process_Steven('C:/Users/Samaneh/XAI_Project/Datasets/LiTao/juliet/juliet/all')
     # print_Json('Selected_20220921')

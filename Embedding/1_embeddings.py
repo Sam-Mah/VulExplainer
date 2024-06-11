@@ -109,7 +109,7 @@ def classify(train_data, test_data, vocab) -> None:
     print(result)
 
 def embedding(vocab, data_path, data):
-    output_path = "Output_embedding_withEdge"
+    output_path = r'I:\XAI_Project\Datasets\Data_VulEx\Output_embedding_withEdge_NDSS'
     curr_dir = os.path.join(os.getcwd(), data_path)
     model = LogisticRegressionCV()
     x_data = []
@@ -150,14 +150,15 @@ def embedding(vocab, data_path, data):
 def main(data_path: str):
     data, vocab = preprocess_data(data_path)
     # &&&&&&&&&&&&&&&&&&&&&&&Embeddings&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-    # embedding(vocab, data_path, data)
+    embedding(vocab, data_path, data)
     # &&&&&&&&&&&&&&&&&&&&&&&Classification&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-    train_data, test_data = prepare_date(data)
-    classify(train_data, test_data, vocab)
+    # train_data, test_data = prepare_date(data)
+    # classify(train_data, test_data, vocab)
 
 if __name__ == '__main__':
     # data_path = "Output"
-    data_path = "I:\XAI_Project\Datasets\Data_VulEx\Output"
+    # data_path = "I:\XAI_Project\Datasets\Data_VulEx\Output"
+    data_path = r'I:\XAI_Project\Datasets\Data_VulEx\Output_NDSS'
 
     main(data_path)
     print("Mission Accomplished")

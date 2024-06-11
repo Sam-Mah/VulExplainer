@@ -3,10 +3,10 @@
         "dataset": "vul",
         "paper": "PG",
         "lr" : 0.001,
-        "epochs" : 200,
+        "epochs" : 1000,
         "clip_max" : 2.0,
-        "batch_size": 64,
-        "early_stopping": 150,
+        "batch_size": 100,
+        "early_stopping": 600,
         "seed" : 42,
         "eval_enabled" : true
     }
