@@ -58,7 +58,31 @@ def plot(graph, edge_weigths, labels, labeldict, idx, thres_min, thres_snip, dat
         if k not in labeldict.keys():
             filter_nodes.remove(k)
     sub_labeldict = {k: labeldict[k] for k in filter_nodes}
+    filter = [19, 17, 32, 91, 92, 33, 52,39, 36, 112, 68, 21, 20, 131, 132, 133, 88, 3, 1, 94, 108, 9, 7, 109, 135, 30, 134, 106]
+    sub_label_edges = []
+    for (i,j) in filter_edges:
+        try:
+            sub_label_edges.append({i: labeldict[i] , j: labeldict[j]})
+        except:
+            print("key error")
 
+    sub_pose_edges = []
+
+    print(len(pos_edges))
+    for (i,j) in pos_edges:
+        try:
+            if i or j in filter:
+                pos_edges.remove((i , j))
+
+            sub_pose_edges.append({i: labeldict[i] , j: labeldict[j]})
+        except:
+            print("key error")
+
+    print(sub_labeldict)
+    print(sub_label_edges)
+    print(sub_pose_edges)
+    print(pos_edges)
+    print(len(pos_edges))
     # Initialize graph object
     G = nx.Graph()
 
@@ -133,6 +157,9 @@ def plot(graph, edge_weigths, labels, labeldict, idx, thres_min, thres_snip, dat
         # Let the graph generate all positions
         pos = nx.kamada_kawai_layout(G)
 
+        # pos_edges=
+
+
         pos_edges = [(u, v) for (u, v) in pos_edges if u in G.nodes() and v in G.nodes()]
 
         nx.draw_networkx_nodes(G,
@@ -170,4 +197,4 @@ def plot(graph, edge_weigths, labels, labeldict, idx, thres_min, thres_snip, dat
         # Save figure
         plt.savefig(f'{save_path}{idx}.png')
         plt.clf()
-    example2CSV(idx,filter_edges, sub_labeldict)
+    # example2CSV(idx,filter_edges, sub_labeldict)

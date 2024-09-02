@@ -29,7 +29,7 @@ import pandas as pd
 
 # out_dir = "I:\Output_Graph_Adj"
 # path_f = "I:\XAI_Project\Datasets\Data_VulEx\Output_embedding_withEdge_NDSS"
-path_f = "I:\XAI_Project\Datasets\Data_VulEx\Output_embedding_withEdge_NDSS _small_Bert"
+path_f = "I:\XAI_Project\Datasets\Data_VulEx\Output_embedding_withEdge_Juliet_test_small_Bert - Trial"
 # curr_dir = os.path.join(os.getcwd(), path_f)
 curr_dir = os.path.join("I:", path_f)
 
@@ -130,7 +130,7 @@ for filename in os.listdir(curr_dir):
 print("Mission Accomplished")
 out_list = [graph, features, labels, blk_hash_lst]
 dir_path = os.path.dirname(os.path.realpath(__file__))
-path = dir_path + "Vulnerability_NDSS_Trial" + '.pkl'
+path = dir_path + "Vulnerability_Juliet_Trial" + '.pkl'
 open_file = open(path, "wb")
 pkl.dump(out_list, open_file)
 open_file.close()
