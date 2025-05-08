@@ -393,11 +393,7 @@ def main(data_path: str) -> None:
         print(f'\tTrain Loss: {train_loss:.3f} | Train Acc: {train_acc * 100:.2f}%')
         print(f'\t Val. Loss: {valid_loss:.3f} |  Val. Acc: {valid_acc * 100:.2f}%')
 
-        # old_loss = new_loss
-        # new_loss = valid_loss
-        # epoch+=1
-
-    ### Step #5: Stand-alone Test data & Compute metrics
+    # Step #5: Stand-alone Test data & Compute metrics
     test_data = data_clean(test_data, fields)
     compute_metrics(classification_model, test_data, SRC, LABEL, num_classes)
 
