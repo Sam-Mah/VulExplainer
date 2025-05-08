@@ -11,10 +11,6 @@ def doc2vec(sentences, emb_size, input_size, freq_ignore, epoch_):
     for s in sentences:
         tokenized_sent.append(word_tokenize(s.lower()))
         tagged_data = [TaggedDocument(d, [i]) for i, d in enumerate(tokenized_sent)]
-
-    #model_doc2vec = Doc2Vec(vector_size=emb_size, min_count=freq_ignore, epochs=epoch_)
-    #model_doc2vec.build_vocab(tagged_data)
-    #model_doc2vec.train(tagged_data, total_examples=model_doc2vec.corpus_count, epochs=model_doc2vec.epochs)
     model_doc2vec = Doc2Vec(tagged_data, vector_size = emb_size, window = input_size, min_count = freq_ignore, epochs = epoch_)
     print("model training")
     return model_doc2vec
