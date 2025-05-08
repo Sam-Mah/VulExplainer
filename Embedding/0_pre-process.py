@@ -104,7 +104,7 @@ def bag_of_words_opr_types(opr_list):
 def pre_process_CFG(path_f):
     # Opening JSON file
     curr_dir = os.path.join(os.getcwd(), path_f)
-    out_dir = r'I:\XAI_Project\Datasets\Data_VulEx\Output_NDSS'
+    out_dir = r''
 
     substring1 = "call"
     substring2 = "bnd"
@@ -200,6 +200,4 @@ def print_Json(path_f):
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    pre_process_CFG(r'I:\XAI_Project\Datasets\Ashita\NDSS18\NDSS18Graph\Output_Preprocessed')
-    # pre_process_Steven('C:/Users/Samaneh/XAI_Project/Datasets/LiTao/juliet/juliet/all')
-    # print_Json('Selected_20220921')
+    pre_process_CFG(r'')
