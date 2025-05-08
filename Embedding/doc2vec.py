@@ -22,8 +22,6 @@ def doc2vec(sentences, emb_size, input_size, freq_ignore, epoch_):
 def getEmbedding_doc2vec(model_doc2vec, qinst):
     test_doc = word_tokenize(qinst.lower())
     test_doc_vector = model_doc2vec.infer_vector(test_doc)
-    #a = model.dv.most_similar(positive=[test_doc_vector])
-    #print(a)
     return test_doc_vector
 
 lines = ["mov rsi, 16",
@@ -39,9 +37,6 @@ embedding_size = 10
 input_size = 2
 freq_ignore = 0
 epoch = 20
-
-#model = doc2vec(sentences, embedding_size, input_size, freq_ignore, epoch)
-#model.save("./doc2vecmodel_single_function_e10_i2.mod")
 
 model = Doc2Vec.load("./doc2vecmodel_single_function_e10_i2.mod")
 query = "mov eax, rdx"
