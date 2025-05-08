@@ -80,30 +80,6 @@ def load_data(path: str) -> list:
     return data_list
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 # Step #1: Analyse data
-# def analyse_data(data: list) -> None:
-#     """Analyse data files"""
-#
-#     # Show the number of emails in each topic
-#     s = np.array([email['Label'] for email in data])
-#     unique, counts = np.unique(s, return_counts=True)
-#     class_dist = dict(np.column_stack((unique, counts)))
-#
-#     # Visualize the class distribution using a pie chart
-#     fig = plt.figure(figsize=(5, 5))
-#     # labels for the four classes
-#     labels = 'sports', 'world', 'scitech', 'business'
-#     # Sizes for each slide
-#     sizes = [class_dist['sports'], class_dist['world'], class_dist['scitech'], class_dist['business']]
-#     # Declare pie chart, where the slices will be ordered and plotted counter-clockwise:
-#     plt.pie(sizes, labels=labels, autopct='%1.1f%%',
-#             shadow=True, startangle=90)
-#     # Equal aspect ratio ensures that pie is drawn as a circle.
-#     plt.axis('equal')
-#     # Display the chart
-#     plt.show()
-#     return None
-# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-# Step #1: Analyse data
 def preprocess_data(path_f) -> None:
     # Opening JSON file
     curr_dir = os.path.join(os.getcwd(), path_f)
@@ -146,18 +122,11 @@ def data_fields() -> dict:
                                      lower=True,
                                      stop_words=stop_words,  # Remove English stop words
                                      tokenize=tt.legacy.data.utils.get_tokenizer("basic_english"))
-    # BODY = tt.legacy.data.Field(sequential=True,
-    #                                  init_token='<sos>',
-    #                                  eos_token='<eos>',
-    #                                  lower=True,
-    #                                  stop_words=stop_words,  # Remove English stop words
-    #                                  tokenize=tt.legacy.data.utils.get_tokenizer("basic_english"))
     LABEL = tt.legacy.data.Field(sequential=False,
                                       use_vocab=False,
                                       unk_token=None,
                                       is_target=True)
 
-    # fields = {'Subject': ('subject', SUBJECT), 'Body': ('body', BODY), 'Label': ('label', LABEL)}
     fields = [('src', SRC), ('label', LABEL)]
 
     return fields, SRC, LABEL
@@ -169,29 +138,8 @@ def data_clean(data: list, fields: dict) -> list:
 
     clean_data = []
     for curr_data in data:
-        # Remove hyperlinks
-        # curr_data["Subject"] = re.sub(r'https?://[^\s\n\r]+', '', curr_data["Subject"])
-        # curr_data["Body"] = re.sub(r'https?://[^\s\n\r]+', '', curr_data["Body"])
-        #
-        # # Remove punctuations
-        # curr_data["Subject"] = curr_data["Subject"].translate(
-        #     str.maketrans(string.punctuation, ' ' * len(string.punctuation)))
-        # curr_data["Body"] = curr_data["Body"].translate(
-        #     str.maketrans(string.punctuation, ' ' * len(string.punctuation)))
-
-        # Define a single training or test tokenized example
-        # tokenized_data = tt.legacy.data.Example.fromJSON(json.dumps(curr_data), fields)
+        #Tokenize the data
         tokenized_data = tt.legacy.data.Example.fromlist(list(curr_data.values()), fields)
-
-        # Apply stemming on the emails' subjects and bodies
-        # stemmer = PorterStemmer()
-        # for i in range(len(tokenized_data.body)):
-        #     tokenized_data.body[i] = stemmer.stem(tokenized_data.body[i])
-        # for i in range(len(tokenized_data.subject)):
-        #     tokenized_data.subject[i] = stemmer.stem(tokenized_data.subject[i])
-
-        # Remove empty data points
-        # if (len(tokenized_data.subject) != 0 or len(tokenized_data.body) != 0):
         clean_data.append(tokenized_data)
     return clean_data
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -211,7 +159,6 @@ def extract_features(X_train, X_valid, SRC: tt.legacy.data.Field, LABEL: tt.lega
     if X_train:
         #Initilize with glove embeddings
         SRC.build_vocab(X_train, vectors="glove.6B.100d")
-        # BODY.build_vocab(X_train, vectors="glove.6B.100d")
         LABEL.build_vocab(X_train)
         train_iter = tt.legacy.data.BucketIterator(X_train, batch_size=batch_s, sort_key=lambda x: len(x.src),
                                                    device=device, sort=True, sort_within_batch=True)
@@ -223,8 +170,6 @@ def extract_features(X_train, X_valid, SRC: tt.legacy.data.Field, LABEL: tt.lega
     print(list(SRC.vocab.stoi.items()))
     # No. of unique tokens in text
     print("Size of SRC vocabulary:", len(SRC.vocab))
-
-    # print("Size of BODY vocabulary:", len(BODY.vocab))
 
     # No. of unique tokens in label
     print("Size of LABEL vocabulary:", len(LABEL.vocab))
@@ -269,10 +214,7 @@ def train_model(classification_model: Vulnerability_Detection, SRC: tt.legacy.da
         batch_loss = 0
         batch_acc = 0
         for data_point in batch:
-            # if (len(data_point.src) == 0):
             x = data_point.src
-            # else:
-            #     x = data_point.body
             # Convert to integer sequence
             indexed = [SRC.vocab.stoi[t] for t in x]
             # Compute no. of words
@@ -316,10 +258,7 @@ def evaluate_model(classification_model: Vulnerability_Detection, SRC: tt.legacy
             batch_loss = 0
             batch_acc = 0
             for data_point in batch:
-                # if (len(data_point.body)==0):
                 x = data_point.src
-                # else:
-                #     x = data_point.body
                 # Convert to integer sequence
                 indexed = [SRC.vocab.stoi[t] for t in x]
                 # Compute no. of words
@@ -358,10 +297,7 @@ def compute_metrics(classification_model: Vulnerability_Detection, test_data: li
     # For the whole test samples
     for sample in test_iter.batches:
         for data_point in sample:
-            # if (len(data_point.body) == 0):
             x = data_point.src
-            # else:
-            #     x = data_point.body
             # Convert to integer sequence
             indexed = [SRC.vocab.stoi[t] for t in x]
             # Compute no. of words
@@ -416,8 +352,6 @@ def main(data_path: str) -> None:
     ### Step #1: Analyse data
     # analyse_data(train_data)
 
-    ### Step #1: aggregate all codes of the functions
-
     ### Step #2: Clean and prepare data
     fields, SRC, LABEL = data_fields()
     train_data = data_clean(train_data, fields)
@@ -444,11 +378,6 @@ def main(data_path: str) -> None:
 
     best_valid_loss = float('inf')
 
-    # epoch = 0
-    # old_loss = -1
-    # new_loss = 0
-    # Train until the maximum epochs is reached or validation loss of two consecutive epochs is less than the loss threshold
-    # while (epoch < N_EPOCHS and abs(new_loss-old_loss) >= LOSS_THRESH) :
     for epoch in range(N_EPOCHS):
         # train the model
         classification_model, train_loss, train_acc = train_model(classification_model, SRC, LABEL, train_iter, optimizer,
@@ -469,17 +398,12 @@ def main(data_path: str) -> None:
         # epoch+=1
 
     ### Step #5: Stand-alone Test data & Compute metrics
-    # test_data = preprocess_data(test_path)
-    # analyse_data(test_data)
     test_data = data_clean(test_data, fields)
     compute_metrics(classification_model, test_data, SRC, LABEL, num_classes)
 
     return 0
     # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 if __name__ == "__main__":
-    # train_path = "./agnews_combined_train.pkl"
-    # test_path = "./agnews_combined_train.pkl"
-    # data_path = "samples_JulietTest"
-    data_path = "C:/Users/Samaneh/XAI_Project/Samaneh_pre-processing/pythonProject/Output_LiTao"
+    data_path = ""
     main(data_path)
     print("Mission Accomplished")
