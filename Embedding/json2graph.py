@@ -42,9 +42,3 @@ def create_graph(file_directory, file_name):
     #print("------------creating nodes---------------------")
     graph_ = StellarGraph(square_node_data, edges_data)
     return graph_
-
-#file_directory = 'E:\saqib_work1\data\Ashita_Data\sample_files_samaneh'
-#file_name = '\cwe119_gcc_32_1157_CWE121_Stack_Based_Buffer_Overflow__CWE193_char_alloca_memcpy_51_bad.o.tmp0.json_graph.json'
-
-#graph = create_graph(file_directory, file_name)
-#print(graph.info())
