@@ -24,9 +24,7 @@ def generate_embeddings(text):
 
 
 # Directory path containing JSON files
-# directory = 'E:\saqib_work1\\data\\Sam\\JSON_BERT\\Output_embedding_withEdge'
-# directory = 'I:\XAI_Project\Datasets\Data_VulEx\Output_embedding_withEdge_NDSS_small_Bert'
-directory = 'I:\XAI_Project\Datasets\Data_VulEx\Output_embedding_withEdge_NDSS _small_Bert'
+directory = ''
 # Get a list of JSON file paths in the directory
 json_files = [os.path.join(directory, file) for file in os.listdir(directory) if file.endswith('.json')]
 
