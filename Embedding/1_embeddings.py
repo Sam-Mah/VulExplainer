@@ -109,7 +109,7 @@ def classify(train_data, test_data, vocab) -> None:
     print(result)
 
 def embedding(vocab, data_path, data):
-    output_path = r'I:\XAI_Project\Datasets\Data_VulEx\Output_embedding_withEdge_NDSS'
+    output_path = r''
     curr_dir = os.path.join(os.getcwd(), data_path)
     model = LogisticRegressionCV()
     x_data = []
@@ -137,7 +137,6 @@ def embedding(vocab, data_path, data):
             # Iterating through the json
             for x in data.keys():
                 if (data[x]['src']):
-                    # indx = np.where(vocab==data[x]['src'])
                     indx = list(vocab).index(' '.join(data[x]['src']))
                     data[x]["embedding"] = x_transformed[i][indx]
                     if (data[x]["embedding"]!=0.0):
@@ -156,9 +155,7 @@ def main(data_path: str):
     # classify(train_data, test_data, vocab)
 
 if __name__ == '__main__':
-    # data_path = "Output"
-    # data_path = "I:\XAI_Project\Datasets\Data_VulEx\Output"
-    data_path = r'I:\XAI_Project\Datasets\Data_VulEx\Output_NDSS'
+    data_path = r''
 
     main(data_path)
     print("Mission Accomplished")
