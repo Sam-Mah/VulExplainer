@@ -22,7 +22,6 @@ for filename in os.listdir(curr_dir):
             data = json.load(f)
             for block in data:
                 if(len(data[block]['src'])!= 0):
-                    # Node DataFrame
                     # Node Features: (Operand Types + TFIDF Value)
                     node_feature = data[block]['features']
                     node_feature.append(data[block]['embedding'])
