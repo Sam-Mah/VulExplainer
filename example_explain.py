@@ -35,7 +35,7 @@ from ExplanationEvaluation.explainers.PGExplainer import PGExplainer
 
 explainer = PGExplainer(model, graphs, features, task)
 
-# We use the same indices as used in the original paper
+# indices show what part of the graph you want to explain
 # indices = range(4001, 6000, 1)
 indices = range(0, 120, 1)
 # indices = range(2000, 3000, 1)
